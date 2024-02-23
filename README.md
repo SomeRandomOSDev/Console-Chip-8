@@ -1,5 +1,6 @@
 # Console Chip-8
-A small CHIP-8 emulator written in C in the console for fun
+A small CHIP-8 emulator written in one day in C for fun
+It runs in the console (text mode)
 
 ## Platforms
 - Windows
