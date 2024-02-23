@@ -18,7 +18,9 @@ enum RenderingMode mode = Screen;
 int main(int argc, char** argv)
 {
     if(argc != 2)
-        return 1;
+        return 1;        
+
+    SetConsoleTitle("Console Chip-8 Emulator");
 
     if(mode == Screen)
         InitConsole();
@@ -31,8 +33,15 @@ int main(int argc, char** argv)
 
     bool running = true;
 
+    uint16_t lastTimer;
+
     while(true)
     {
+        uint16_t deltaTime_milliseconds = timeGetTime() - lastTimer;
+        lastTimer = timeGetTime();
+        float deltaTime = deltaTime_milliseconds / 1000.f;
+        uint8_t FPS = 1 / deltaTime;
+
         // HANDLE_KEY(sDown, 0x53);
         // HANDLE_KEY(spaceDown, VK_SPACE);
 
@@ -55,6 +64,6 @@ int main(int argc, char** argv)
             DisplayScreenBuffer();
         }
 
-        Sleep(1000 / 60);
+        Sleep(max(0, (1000 / 60) - deltaTime_milliseconds));
     }
 }
