@@ -2,7 +2,7 @@
 
 #include <windows.h>
 
-#define SCREEN_WIDTH    64
+#define SCREEN_WIDTH    (64 * 2)   // The aspect ratio of the characters is ~2x1
 #define SCREEN_HEIGHT   32
 
 HANDLE consoleHandle;

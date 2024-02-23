@@ -140,7 +140,8 @@ void C8_renderToScreenBuffer(struct Chip8* c8, char darkChar, char lightChar)
         for(uint8_t j = 0; j < 64; j++)
         {
             char c = c8->screen[i * 64 + j] ? lightChar : darkChar;
-            SetScreenBufferCharacter(j, i, c);
+            SetScreenBufferCharacter(j * 2, i, c);
+            SetScreenBufferCharacter(j * 2 + 1, i, c);
         }
     }
 }

@@ -17,4 +17,4 @@ make build
 ```
 or just drag and drop the ROM file on the exe from the file explorer
 
-2. If the rendering isn't right, configure the console to render at a resolution of 64x32 (right-click on the window -> settings -> size)
+2. If the rendering isn't right, configure the console to render at a resolution of 128x32 (right-click on the window -> settings -> size)
