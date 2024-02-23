@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "out.h": "c"
+        "out.h": "c",
+        "chip-8_instructions.h": "c",
+        "chip-8.h": "c",
+        "stdio.h": "c"
     }
 }

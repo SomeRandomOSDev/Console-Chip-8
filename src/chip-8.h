@@ -1,9 +1,8 @@
 #pragma once
 
-#define KB 1024
+#include <time.h>
 
-#define UNHANDLED_OPCODE    strcat(c8->log, "Unhandled opcode"); \
-                            c8->PC -= 2;
+#define KB 1024
 
 struct Chip8
 {
@@ -53,44 +52,15 @@ const uint8_t C8_font[5 * 16] =     // 16x 8x5 sprites
 	0xF0, 0x80, 0xF0, 0x80, 0x80		// F
 };
 
-void OP_0xxx(struct Chip8* c8)
+int keymap[16] =
 {
-    switch(c8->op)
-    {
-    case 0x00e0:
-        strcat(c8->log, "CLS");
-        
-        memset(&c8->screen[0], false, 64 * 32);
-
-        break;
-
-    case 0x00ee:
-        strcat(c8->log, "RET");
-
-        c8->PC = c8->stack[c8->SP];
-        c8->SP--;
-
-        break;
-
-    default:
-        UNHANDLED_OPCODE
-
-        break;
-    }
-}
-
-void JP(struct Chip8* c8)
-{
-    c8->PC = c8->NNN;
-}
-
-void (*instructions_first_nibble[16])(struct Chip8* c8) = 
-{
-    OP_0xxx,    JP,     NULL,   NULL, 
-    NULL,       NULL,   NULL,   NULL, 
-    NULL,       NULL,   NULL,   NULL, 
-    NULL,       NULL,   NULL,   NULL
+    VK_NUMPAD0, VK_NUMPAD1, VK_NUMPAD2, VK_NUMPAD3, 
+    VK_NUMPAD4, VK_NUMPAD5, VK_NUMPAD6, VK_NUMPAD7, 
+    VK_NUMPAD8, VK_NUMPAD9, 0x41,       0x42, 
+    0x43,       0x44,       0x45,       0x46
 };
+
+#include "chip-8_instructions.h"
 
 void C8_init(struct Chip8* c8)
 {
@@ -102,6 +72,8 @@ void C8_init(struct Chip8* c8)
     memset(&c8->V[0], 0, 16);
     memcpy(&c8->memory[0], &C8_font[0], 5 * 16);
     memset(&c8->screen[0], false, 64 * 32);
+
+    srand(time(0));
 }
 
 void C8_loadROM(struct Chip8* c8, char* file)
@@ -125,6 +97,7 @@ void C8_cycle(struct Chip8* c8)
     c8->op = ((op_hi << 8) | op_lo);
     c8->PC += 2;
 
+    //decode
     c8->NNN = (c8->op & 0x0fff);
     c8->NN = (c8->op & 0xff);
     c8->N = (c8->op & 0x0f);
@@ -136,19 +109,38 @@ void C8_cycle(struct Chip8* c8)
     c8->nibble_0010 = c8->Y;
     c8->nibble_0001 = (op_lo & 0x0f);
 
-    //execute
-    itoa(c8->PC - 2, c8->log, 16);
-    strcat(c8->log, " : ");
     char buf[4];
+    strcpy(c8->log, "0x");
+    itoa(c8->PC - 2, buf, 16);
+    strcat(c8->log, buf);
+    strcat(c8->log, " : 0x");
     itoa(c8->op, buf, 16);
     strcat(c8->log, &buf[0]);
     strcat(c8->log, " : ");
+
+    //execute
     void (*op_handler)(struct Chip8* c8) = instructions_first_nibble[c8->nibble_1000];
     if(op_handler == NULL)
-    {
         UNHANDLED_OPCODE
-    }
     else
         (*op_handler)(c8);
+
     strcat(c8->log, "\n");
+
+    if(c8->DT > 0)
+        c8->DT--;
+    if(c8->ST > 0)
+        c8->ST--;
+}
+
+void C8_renderToScreenBuffer(struct Chip8* c8, char darkChar, char lightChar)
+{
+    for(uint8_t i = 0; i < 32; i++)
+    {
+        for(uint8_t j = 0; j < 64; j++)
+        {
+            char c = c8->screen[i * 64 + j] ? lightChar : darkChar;
+            SetScreenBufferCharacter(j, i, c);
+        }
+    }
 }
