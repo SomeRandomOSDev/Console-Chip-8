@@ -1,8 +1,14 @@
 # Console Chip-8
 A small CHIP-8 emulator written in C in the console for fun
 
+## Platforms
+- Windows
+
 ## How to build
-1. Simply run ```Shell make build ``` in the main folder
+- Simply run
+```Shell
+make build
+```
 
 ## How to run
 1. Run the exe

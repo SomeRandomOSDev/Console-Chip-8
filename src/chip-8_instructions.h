@@ -370,7 +370,7 @@ void SKNP_Vx(struct Chip8* c8)
 
 void OP_Fxxx(struct Chip8* c8)
 {
-    void (*op_handler)(struct Chip8* c8) = instructions_F_last_byte[c8->nibble_0001];
+    void (*op_handler)(struct Chip8* c8) = instructions_F_last_byte[c8->op & 0xff];
     if(op_handler == NULL)
         UNHANDLED_OPCODE
     else
