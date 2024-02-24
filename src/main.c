@@ -7,6 +7,8 @@
 
 #define HANDLE_KEY(var, vKey)   { if(GetAsyncKeyState(vKey) >> 7) var++; else var = 0; }
 
+uint8_t instructionsPerFrame = 5;
+
 enum RenderingMode
 {
     Screen,
@@ -22,6 +24,9 @@ int main(int argc, char** argv)
 
     SetConsoleTitle("Console Chip-8 Emulator");
 
+    printf("Instructions per frame: ");
+    scanf("%d", &instructionsPerFrame);
+
     if(mode == Screen)
         InitConsole();
 
@@ -29,7 +34,7 @@ int main(int argc, char** argv)
     C8_init(&emu);
     C8_loadROM(&emu, argv[1]);
 
-    // uint64_t sDown = 0, spaceDown = 0;
+    uint64_t spaceDown = 0;
 
     bool running = true;
 
@@ -42,18 +47,18 @@ int main(int argc, char** argv)
         float deltaTime = deltaTime_milliseconds / 1000.f;
         uint8_t FPS = 1 / deltaTime;
 
-        // HANDLE_KEY(sDown, 0x53);
-        // HANDLE_KEY(spaceDown, VK_SPACE);
+        HANDLE_KEY(spaceDown, VK_SPACE);
 
-        // running ^= (spaceDown == 1);
+        running ^= (spaceDown == 1);
 
-        // if(sDown == 1 || running)
-        {
-            C8_cycle(&emu);
+        if(running)
+            for(uint8_t i = 0; i < instructionsPerFrame; i++)
+            {
+                C8_cycle(&emu);
 
-            if(mode == Instructions)
-                printf("%s", emu.log);
-        }
+                if(mode == Instructions)
+                    printf("%s", emu.log);
+            }
         
         if(mode == Screen)
         {
