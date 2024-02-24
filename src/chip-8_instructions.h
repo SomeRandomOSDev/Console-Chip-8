@@ -329,12 +329,15 @@ void DRW_Vx_Vy_N(struct Chip8* c8)
         for(uint8_t j = 0; j < 8; j++)
         {
             bool pix = ((row >> (7 - j)) & 1);
-            bool* screenPix = &c8->screen[((i + y) % 32) * 64 + ((j + x) % 64)];
+            if(!((i + y) >= 32 || (j + x) >= 64))
+            {
+                bool* screenPix = &c8->screen[(i + y) * 64 + (j + x)];//&c8->screen[((i + y) % 32) * 64 + ((j + x) % 64)];
 
-            if(pix && *screenPix)
-                c8->V[0xf] = 1;
+                if(pix && *screenPix)
+                    c8->V[0xf] = 1;
 
-            *screenPix ^= pix;
+                *screenPix ^= pix;
+            }
         }
     }
 }
